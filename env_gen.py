@@ -14,6 +14,13 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 
 
+def draw_grid(window_w, window_h, cell_size):
+    for x in range(0, window_w, cell_size):
+        pygame.draw.line(SCREENSURF, BLACK, (x, 0), (x, window_h))
+    for y in range(0, window_h, cell_size):
+        pygame.draw.line(SCREENSURF, BLACK, (0, y), (window_w, y))
+
+
 def main():
     pygame.init()
     global SCREENSURF
@@ -26,6 +33,7 @@ def main():
                 pygame.quit()
                 sys.exit()
         pygame.display.update()
+        draw_grid(WINDOW_WIDTH, WINDOW_HEIGHT, CELL_SIZE)
 
 if __name__ == '__main__':
     main()
