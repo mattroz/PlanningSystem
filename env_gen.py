@@ -21,6 +21,13 @@ def draw_grid(window_w, window_h, cell_size):
         pygame.draw.line(SCREENSURF, BLACK, (0, y), (window_w, y))
 
 
+def create_blank_grid(cell_size):
+    field_data = {}
+    for x in range(cell_size):
+        for y in range(cell_size):
+            field_data[(x, y)] = 0
+
+
 def main():
     pygame.init()
     global SCREENSURF
