@@ -7,7 +7,7 @@ from time import sleep
 # main graphical parameters
 WINDOW_WIDTH = 640
 WINDOW_HEIGHT = 640
-CELL_SIZE = 20
+CELL_SIZE = 10
 CELL_AMOUNT_X = WINDOW_WIDTH // CELL_SIZE
 CELL_AMOUNT_Y = WINDOW_HEIGHT // CELL_SIZE
 START_CELL = (1, 1)
@@ -73,15 +73,15 @@ def color_cell(cell, color):
     pygame.draw.rect(SCREENSURF, color, (_x, _y, CELL_SIZE, CELL_SIZE))
 
 
-def breadth_first_search(field, visits_grid, current_cell, goal_cell):
+def depth_first_search(field, visits_grid, current_cell, goal_cell):
     sleep(0.1)
     pygame.display.update()
     if field[current_cell[0], current_cell[1]] == field[goal_cell[0], goal_cell[1]]:
         print("Goal've been achieved")
         exit()
     # down, right, up, left
-    x_direction = [0, 1, 0, -1]
-    y_direction = [1, 0, -1, 0]
+    x_direction = [1, -1, -1, 1, 0, 1, 0, -1]
+    y_direction = [1, -1, 1, -1, 1, 0, -1, 0]
     directions = len(x_direction)
 
     neighbour = []
@@ -94,7 +94,7 @@ def breadth_first_search(field, visits_grid, current_cell, goal_cell):
         neighbour[1] = current_cell[1] + y_direction[step]
         if (field[(neighbour[0], neighbour[1])] == 0 or field[(neighbour[0], neighbour[1])] == 3) \
                 and visits_grid[(neighbour[0], neighbour[1])] != 1:
-            breadth_first_search(field, visits_grid, neighbour, goal_cell)
+            depth_first_search(field, visits_grid, neighbour, goal_cell)
 
 
 def main():
@@ -110,7 +110,7 @@ def main():
             visits[(x, y)] = 0
 
     field = create_blank_grid()
-    fill_with_obstacles(field, 85000)
+    fill_with_obstacles(field, 95000)
 
     while True:
         for event in pygame.event.get():
@@ -119,7 +119,7 @@ def main():
                 sys.exit()
         pygame.display.update()
         draw_grid(field, WINDOW_WIDTH, WINDOW_HEIGHT, CELL_SIZE)
-        breadth_first_search(field, visits, START_CELL, GOAL_CELL)
+        depth_first_search(field, visits, START_CELL, GOAL_CELL)
 
 if __name__ == '__main__':
     main()
