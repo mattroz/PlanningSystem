@@ -5,8 +5,8 @@ import os
 from time import sleep
 
 # main graphical parameters
-WINDOW_WIDTH = 640
-WINDOW_HEIGHT = 640
+WINDOW_WIDTH = 1280
+WINDOW_HEIGHT = 900
 CELL_SIZE = 10
 CELL_AMOUNT_X = WINDOW_WIDTH // CELL_SIZE
 CELL_AMOUNT_Y = WINDOW_HEIGHT // CELL_SIZE
@@ -74,7 +74,7 @@ def color_cell(cell, color):
 
 
 def depth_first_search(field, visits_grid, parents_grid, current_cell, goal_cell):
-    sleep(0.01)
+    sleep(0.03)
     pygame.display.update()
     if field[current_cell[0], current_cell[1]] == field[goal_cell[0], goal_cell[1]]:
         print("Goal've been achieved")
@@ -97,7 +97,7 @@ def depth_first_search(field, visits_grid, parents_grid, current_cell, goal_cell
 # recover path from goal cell to the start cell
 def path_recovery(parents_grid, current_cell, dest_cell):
     color_cell(current_cell, RED)
-    sleep(0.01)
+    sleep(0.03)
     pygame.display.update()
     if current_cell == dest_cell:
         sleep(3)
@@ -107,7 +107,8 @@ def path_recovery(parents_grid, current_cell, dest_cell):
 
 def main():
     pygame.init()
-    os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (100, 100)
+    sys.setrecursionlimit(1500)
+    os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (0, 0)
     global SCREENSURF
     SCREENSURF = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
     SCREENSURF.fill(WHITE)
