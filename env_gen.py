@@ -47,7 +47,7 @@ def create_blank_grid():
 
 # TODO: should call constants either as arguments or as global variables!
 def fill_with_obstacles(grid, rarefaction):
-    obstacle_num = WINDOW_WIDTH
+    obstacle_num = WINDOW_WIDTH**2 - WINDOW_HEIGHT
     # generate obstacles according to rarefaction seed
     for cell in grid:
         # make some kind of border for the field
@@ -73,44 +73,53 @@ def color_cell(cell, color):
     pygame.draw.rect(SCREENSURF, color, (_x, _y, CELL_SIZE, CELL_SIZE))
 
 
-def depth_first_search(field, visits_grid, current_cell, goal_cell):
-    sleep(0.1)
+def depth_first_search(field, visits_grid, parents_grid, current_cell, goal_cell):
+    sleep(0.01)
     pygame.display.update()
     if field[current_cell[0], current_cell[1]] == field[goal_cell[0], goal_cell[1]]:
         print("Goal've been achieved")
+        path_recovery(parents_grid, current_cell, START_CELL)
         exit()
     # down, right, up, left
-    x_direction = [1, -1, -1, 1, 0, 1, 0, -1]
-    y_direction = [1, -1, 1, -1, 1, 0, -1, 0]
+    x_direction = [0, 1, 0, -1]
+    y_direction = [1, 0, -1, 0]
     directions = len(x_direction)
-
-    neighbour = []
-    for i in range(2):
-        neighbour.append(0)
     visits_grid[current_cell[0], current_cell[1]] = 1
     color_cell(current_cell, TURQUOISE)
     for step in range(directions):
-        neighbour[0] = current_cell[0] + x_direction[step]
-        neighbour[1] = current_cell[1] + y_direction[step]
-        if (field[(neighbour[0], neighbour[1])] == 0 or field[(neighbour[0], neighbour[1])] == 3) \
-                and visits_grid[(neighbour[0], neighbour[1])] != 1:
-            depth_first_search(field, visits_grid, neighbour, goal_cell)
+        neighbour = (current_cell[0] + x_direction[step], current_cell[1] + y_direction[step])
+        if (field[neighbour] == 0 or field[neighbour] == 3) \
+                and visits_grid[neighbour] != 1:
+            parents_grid[neighbour] = current_cell
+            depth_first_search(field, visits_grid, parents_grid, neighbour, goal_cell)
+
+
+# recover path from goal cell to the start cell
+def path_recovery(parents_grid, current_cell, dest_cell):
+    color_cell(current_cell, RED)
+    sleep(0.01)
+    pygame.display.update()
+    if current_cell == dest_cell:
+        sleep(3)
+        exit(0)
+    path_recovery(parents_grid, parents_grid[current_cell], dest_cell)
 
 
 def main():
     pygame.init()
-    os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (100, 10)
+    os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (100, 100)
     global SCREENSURF
     SCREENSURF = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
     SCREENSURF.fill(WHITE)
 
     visits = {}
+    parents = {}
     for x in range(CELL_AMOUNT_X):
         for y in range(CELL_AMOUNT_Y):
             visits[(x, y)] = 0
-
+            parents[(x, y)] = [0, 0]
     field = create_blank_grid()
-    fill_with_obstacles(field, 95000)
+    fill_with_obstacles(field, 65000)
 
     while True:
         for event in pygame.event.get():
@@ -119,7 +128,7 @@ def main():
                 sys.exit()
         pygame.display.update()
         draw_grid(field, WINDOW_WIDTH, WINDOW_HEIGHT, CELL_SIZE)
-        depth_first_search(field, visits, START_CELL, GOAL_CELL)
+        depth_first_search(field, visits, parents, START_CELL, GOAL_CELL)
 
 if __name__ == '__main__':
     main()
