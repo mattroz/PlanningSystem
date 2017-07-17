@@ -2,15 +2,16 @@ import pygame
 import sys
 import random
 import os
+import queue
 from time import sleep
 
 # main graphical parameters
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 900
-CELL_SIZE = 10
+CELL_SIZE = 5
 CELL_AMOUNT_X = WINDOW_WIDTH // CELL_SIZE
 CELL_AMOUNT_Y = WINDOW_HEIGHT // CELL_SIZE
-START_CELL = (1, 1)
+START_CELL = (10, 10)
 GOAL_CELL = (CELL_AMOUNT_X - 2, CELL_AMOUNT_Y - 2)
 
 assert ((WINDOW_WIDTH % CELL_SIZE == 0) and (WINDOW_HEIGHT % CELL_SIZE == 0)), "Change cell size"
@@ -94,6 +95,33 @@ def depth_first_search(field, visits_grid, parents_grid, current_cell, goal_cell
             depth_first_search(field, visits_grid, parents_grid, neighbour, goal_cell)
 
 
+def breadth_first_search(field, visits_grid, parents_grid, current_cell, goal_cell):
+    sleep(0.03)
+    pygame.display.update()
+    if field[current_cell[0], current_cell[1]] == field[goal_cell[0], goal_cell[1]]:
+        print("Goal've been achieved")
+        path_recovery(parents_grid, current_cell, START_CELL)
+        exit()
+    # down, right, up, left
+    x_direction = [0, 1, 0, -1]
+    y_direction = [1, 0, -1, 0]
+    directions = len(x_direction)
+    neighbour = []
+    visits_grid[current_cell[0], current_cell[1]] = 1
+    cells_to_explore = queue.Queue()
+
+    for i in range(directions):
+        neighbour.append((current_cell[0] + x_direction[i], current_cell[1] + y_direction[i]))
+        if field[neighbour[i]] != 1 and visits_grid[neighbour[i]] == 0:
+            color_cell(neighbour[i], TURQUOISE)
+            cells_to_explore.put(neighbour[i])
+        if (field[neighbour[i]] == 0 or field[neighbour[i]] == 3) \
+                and visits_grid[neighbour[i]] != 1:
+            parents_grid[neighbour[i]] = current_cell
+    while cells_to_explore.empty() == False:
+        breadth_first_search(field, visits_grid, parents_grid, cells_to_explore.get(), goal_cell)
+
+
 # recover path from goal cell to the start cell
 def path_recovery(parents_grid, current_cell, dest_cell):
     color_cell(current_cell, RED)
@@ -107,7 +135,7 @@ def path_recovery(parents_grid, current_cell, dest_cell):
 
 def main():
     pygame.init()
-    sys.setrecursionlimit(1500)
+    sys.setrecursionlimit(2500)
     os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (0, 0)
     global SCREENSURF
     SCREENSURF = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
@@ -120,7 +148,7 @@ def main():
             visits[(x, y)] = 0
             parents[(x, y)] = [0, 0]
     field = create_blank_grid()
-    fill_with_obstacles(field, 65000)
+    fill_with_obstacles(field, 80000)
 
     while True:
         for event in pygame.event.get():
@@ -129,7 +157,7 @@ def main():
                 sys.exit()
         pygame.display.update()
         draw_grid(field, WINDOW_WIDTH, WINDOW_HEIGHT, CELL_SIZE)
-        depth_first_search(field, visits, parents, START_CELL, GOAL_CELL)
+        breadth_first_search(field, visits, parents, START_CELL, GOAL_CELL)
 
 if __name__ == '__main__':
     main()
