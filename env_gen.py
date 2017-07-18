@@ -11,7 +11,7 @@ WINDOW_HEIGHT = 900
 CELL_SIZE = 20
 CELL_AMOUNT_X = WINDOW_WIDTH // CELL_SIZE
 CELL_AMOUNT_Y = WINDOW_HEIGHT // CELL_SIZE
-START_CELL = (10, 10)
+START_CELL = (50, 40)
 GOAL_CELL = (CELL_AMOUNT_X - 2, CELL_AMOUNT_Y - 2)
 
 assert ((WINDOW_WIDTH % CELL_SIZE == 0) and (WINDOW_HEIGHT % CELL_SIZE == 0)), "Change cell size"
@@ -22,6 +22,7 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 TURQUOISE = (102, 255, 255)
+GREEN = (0, 255, 0)
 
 
 # fill cells with colors
@@ -102,19 +103,10 @@ def breadth_first_search(field, visits_grid, parents_grid, start_cell, goal_cell
     directions = len(x_direction)
     cells_to_explore = queue.Queue()
     cells_to_explore.put(start_cell)
-    '''
-    for i in range(directions):
-        neighbour.append((current_cell[0] + x_direction[i], current_cell[1] + y_direction[i]))
-        if field[neighbour[i]] != 1 and visits_grid[neighbour[i]] == 0:
-            color_cell(neighbour[i], TURQUOISE)
-            cells_to_explore.put(neighbour[i])
-        if (field[neighbour[i]] == 0 or field[neighbour[i]] == 3) \
-                and visits_grid[neighbour[i]] != 1:
-            parents_grid[neighbour[i]] = current_cell
-    breadth_first_search(field, visits_grid, parents_grid, cells_to_explore, cells_to_explore.get(), goal_cell)
-    '''
+
     while cells_to_explore.empty() == False:
         current_cell = cells_to_explore.get()
+        color_cell(current_cell, GREEN)
         visits_grid[current_cell[0], current_cell[1]] = 1
         neighbour = []
         for i in range(directions):
@@ -125,11 +117,11 @@ def breadth_first_search(field, visits_grid, parents_grid, start_cell, goal_cell
                 exit()
             if field[neighbour[i]] != 1 and visits_grid[neighbour[i]] == 0:
                 color_cell(neighbour[i], TURQUOISE)
+                sleep(0.03)
                 pygame.display.update()
                 cells_to_explore.put(neighbour[i])
-            if (field[neighbour[i]] == 0 or field[neighbour[i]] == 3) \
-                    and visits_grid[neighbour[i]] != 1:
                 parents_grid[neighbour[i]] = current_cell
+        color_cell(current_cell, TURQUOISE)
 
 
 # recover path from goal cell to the start cell
