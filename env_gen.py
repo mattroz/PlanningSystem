@@ -95,20 +95,14 @@ def depth_first_search(field, visits_grid, parents_grid, current_cell, goal_cell
             depth_first_search(field, visits_grid, parents_grid, neighbour, goal_cell)
 
 
-def breadth_first_search(field, visits_grid, parents_grid, cells_to_explore, current_cell, goal_cell):
-    sleep(0.0001)
-    pygame.display.update()
-    if field[current_cell[0], current_cell[1]] == field[goal_cell[0], goal_cell[1]]:
-        print("Goal've been achieved")
-        path_recovery(parents_grid, current_cell, START_CELL)
-        exit()
+def breadth_first_search(field, visits_grid, parents_grid, start_cell, goal_cell):
     # down, right, up, left
     x_direction = [0, 1, 0, -1]
     y_direction = [1, 0, -1, 0]
     directions = len(x_direction)
-    neighbour = []
-    visits_grid[current_cell[0], current_cell[1]] = 1
-
+    cells_to_explore = queue.Queue()
+    cells_to_explore.put(start_cell)
+    '''
     for i in range(directions):
         neighbour.append((current_cell[0] + x_direction[i], current_cell[1] + y_direction[i]))
         if field[neighbour[i]] != 1 and visits_grid[neighbour[i]] == 0:
@@ -118,6 +112,24 @@ def breadth_first_search(field, visits_grid, parents_grid, cells_to_explore, cur
                 and visits_grid[neighbour[i]] != 1:
             parents_grid[neighbour[i]] = current_cell
     breadth_first_search(field, visits_grid, parents_grid, cells_to_explore, cells_to_explore.get(), goal_cell)
+    '''
+    while cells_to_explore.empty() == False:
+        current_cell = cells_to_explore.get()
+        visits_grid[current_cell[0], current_cell[1]] = 1
+        neighbour = []
+        for i in range(directions):
+            neighbour.append((current_cell[0] + x_direction[i], current_cell[1] + y_direction[i]))
+            if field[current_cell[0], current_cell[1]] == field[goal_cell[0], goal_cell[1]]:
+                print("Goal've been achieved")
+                path_recovery(parents_grid, current_cell, START_CELL)
+                exit()
+            if field[neighbour[i]] != 1 and visits_grid[neighbour[i]] == 0:
+                color_cell(neighbour[i], TURQUOISE)
+                pygame.display.update()
+                cells_to_explore.put(neighbour[i])
+            if (field[neighbour[i]] == 0 or field[neighbour[i]] == 3) \
+                    and visits_grid[neighbour[i]] != 1:
+                parents_grid[neighbour[i]] = current_cell
 
 
 # recover path from goal cell to the start cell
@@ -147,7 +159,6 @@ def main():
             parents[(x, y)] = [0, 0]
     field = create_blank_grid()
     fill_with_obstacles(field, 80000)
-    q = queue.Queue()
 
     while True:
         for event in pygame.event.get():
@@ -156,7 +167,7 @@ def main():
                 sys.exit()
         pygame.display.update()
         draw_grid(field, WINDOW_WIDTH, WINDOW_HEIGHT, CELL_SIZE)
-        breadth_first_search(field, visits, parents, q, START_CELL, GOAL_CELL)
+        breadth_first_search(field, visits, parents, START_CELL, GOAL_CELL)
 
 if __name__ == '__main__':
     main()
