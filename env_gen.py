@@ -11,7 +11,7 @@ WINDOW_HEIGHT = 900
 CELL_SIZE = 5
 CELL_AMOUNT_X = WINDOW_WIDTH // CELL_SIZE
 CELL_AMOUNT_Y = WINDOW_HEIGHT // CELL_SIZE
-START_CELL = (10, 10)
+START_CELL = (50, 40)
 GOAL_CELL = (CELL_AMOUNT_X - 2, CELL_AMOUNT_Y - 2)
 
 assert ((WINDOW_WIDTH % CELL_SIZE == 0) and (WINDOW_HEIGHT % CELL_SIZE == 0)), "Change cell size"
@@ -22,6 +22,7 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 TURQUOISE = (102, 255, 255)
+GREEN = (0, 255, 0)
 
 
 # fill cells with colors
@@ -95,6 +96,7 @@ def depth_first_search(field, visits_grid, parents_grid, current_cell, goal_cell
             depth_first_search(field, visits_grid, parents_grid, neighbour, goal_cell)
 
 
+<<<<<<< HEAD
 def breadth_first_search(field, visits_grid, parents_grid, current_cell, goal_cell):
     sleep(0.03)
     pygame.display.update()
@@ -102,10 +104,14 @@ def breadth_first_search(field, visits_grid, parents_grid, current_cell, goal_ce
         print("Goal've been achieved")
         path_recovery(parents_grid, current_cell, START_CELL)
         exit()
+=======
+def breadth_first_search(field, visits_grid, parents_grid, start_cell, goal_cell):
+>>>>>>> 1deed1232ed2c199495cbb0601bbd17562b00c47
     # down, right, up, left
     x_direction = [0, 1, 0, -1]
     y_direction = [1, 0, -1, 0]
     directions = len(x_direction)
+<<<<<<< HEAD
     neighbour = []
     visits_grid[current_cell[0], current_cell[1]] = 1
     cells_to_explore = queue.Queue()
@@ -120,6 +126,29 @@ def breadth_first_search(field, visits_grid, parents_grid, current_cell, goal_ce
             parents_grid[neighbour[i]] = current_cell
     while cells_to_explore.empty() == False:
         breadth_first_search(field, visits_grid, parents_grid, cells_to_explore.get(), goal_cell)
+=======
+    cells_to_explore = queue.Queue()
+    cells_to_explore.put(start_cell)
+
+    while cells_to_explore.empty() == False:
+        current_cell = cells_to_explore.get()
+        color_cell(current_cell, GREEN)
+        visits_grid[current_cell[0], current_cell[1]] = 1
+        neighbour = []
+        for i in range(directions):
+            neighbour.append((current_cell[0] + x_direction[i], current_cell[1] + y_direction[i]))
+            if field[current_cell[0], current_cell[1]] == field[goal_cell[0], goal_cell[1]]:
+                print("Goal've been achieved")
+                path_recovery(parents_grid, current_cell, START_CELL)
+                exit()
+            if field[neighbour[i]] != 1 and visits_grid[neighbour[i]] == 0:
+                color_cell(neighbour[i], TURQUOISE)
+                sleep(0.03)
+                pygame.display.update()
+                cells_to_explore.put(neighbour[i])
+                parents_grid[neighbour[i]] = current_cell
+        color_cell(current_cell, TURQUOISE)
+>>>>>>> 1deed1232ed2c199495cbb0601bbd17562b00c47
 
 
 # recover path from goal cell to the start cell
